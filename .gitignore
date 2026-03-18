@@ -1,0 +1,21 @@
+# Security
+.env
+.env.*
+*.env
+!.env.example
+
+# Traefik
+acme.json
+certs/
+private/
+
+# Logs
+logs/
+*.log
+
+# OS and IDE files
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+*.swp
