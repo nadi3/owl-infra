@@ -1,0 +1,47 @@
+name: owl-sonarqube
+
+services:
+  sonarqube:
+    image: sonarqube:latest
+    container_name: sonarqube
+    restart: always
+    environment:
+      - SONAR_JDBC_URL=jdbc:postgresql://db_sonarqube:5432/${SONAR_DB_NAME}
+      - SONAR_JDBC_USERNAME=${SONAR_DB_USER}
+      - SONAR_JDBC_PASSWORD=${SONAR_DB_PASSWORD}
+    volumes:
+      - sonarqube_data:/opt/sonarqube/data
+      - sonarqube_extensions:/opt/sonarqube/extensions
+      - sonarqube_logs:/opt/sonarqube/logs
+    depends_on:
+      - db_sonarqube
+    networks:
+      - proxy-net
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.sonar.rule=Host(`sonar.owl-nest.ch`)"
+      - "traefik.http.routers.sonar.entrypoints=web"
+      - "traefik.http.services.sonar.loadbalancer.server.port=9000"
+
+  db_sonarqube:
+    image: postgres:15
+    container_name: sonarqube_db
+    restart: always
+    environment:
+      - POSTGRES_USER=${SONAR_DB_USER}
+      - POSTGRES_PASSWORD=${SONAR_DB_PASSWORD}
+      - POSTGRES_DB=${SONAR_DB_NAME}
+    volumes:
+      - sonarqube_db_data:/var/lib/postgresql/data
+    networks:
+      - proxy-net
+
+volumes:
+  sonarqube_data:
+  sonarqube_extensions:
+  sonarqube_logs:
+  sonarqube_db_data:
+
+networks:
+  proxy-net:
+    external: true
