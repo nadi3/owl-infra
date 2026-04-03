@@ -22,6 +22,7 @@ services:
       - "--api.insecure=false"
       - "--providers.docker=true"
       - "--providers.docker.exposedbydefault=false"
+      - "--entrypoints.web.forwardedHeaders.insecure=true"
       - "--entrypoints.web.address=:80"
     environment:
       - DOCKER_API_VERSION=1.40
