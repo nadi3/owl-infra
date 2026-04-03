@@ -9,6 +9,10 @@ acme.json
 certs/
 private/
 
+# Authentik
+authentik/media/
+authentik/custom-templates/
+
 # Logs
 logs/
 *.log
