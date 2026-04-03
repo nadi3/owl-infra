@@ -1,3 +1,5 @@
+name: owl-authentik
+
 services:
   postgresql:
     image: docker.io/library/postgres:16-alpine
