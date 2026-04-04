@@ -2,13 +2,15 @@
 
 Welcome to the infrastructure repository for my personal self-hosted cloud environment. This repository contains the Infrastructure as Code (IaC) required to deploy and manage a secure, containerized set of services using Docker Compose.
 
+
+
 ## Software Stack
 
 This infrastructure relies on a modern, open-source stack designed for security, privacy, and performance:
 
 * **Network and ingress:**
   *  [Cloudflared](https://developers.cloudflare.com/cloudflare-one/connections/connect-networks/) (Secure outbound tunnel, zero open ports)
-  * [Traefik v3](https://traefik.io/traefik/) (Dynamic Reverse Proxy)
+  *  [Traefik v3](https://traefik.io/traefik/) (Dynamic Reverse Proxy)
 
 * **Identity and access management:** 
   * [Authentik](https://goauthentik.io/) (Centralized SSO, SAML, and OIDC provider)
@@ -16,13 +18,23 @@ This infrastructure relies on a modern, open-source stack designed for security,
 * **Services:**
   * [Nextcloud AIO](https://github.com/nextcloud/all-in-one) (Personal cloud, file sync, and collaboration)
   * [SonarQube](https://www.sonarsource.com/products/sonarqube/) (Continuous Code Quality and Security Analysis)
+* **Monitoring and observability:**
+  * [Prometheus](https://prometheus.io/) (Time-series database for metrics)
+  * [Grafana](https://grafana.com/) (Visualization and dashboards)
+  * [Node-Exporter](https://github.com/prometheus/node_exporter) (Hardware and OS metrics)
+  * [cAdvisor](https://github.com/google/cadvisor) (Container resource usage)
+
+
 
 ## Hardware
 
 This stack is currently optimized to run on lightweight, energy-efficient hardware:
+
 * **Host:** Raspberry Pi 4 5
 * **Storage:** NVMe SSD (good for database performance and Elasticsearch stability required by SonarQube)
 * **OS:** Linux (Raspberry Pi OS lite) with modified kernel parameters (`vm.max_map_count=524288`) for Elasticsearch.
+
+
 
 ## Repository structure and secrets management
 
@@ -38,11 +50,17 @@ owl-infra/
 │   ├── docker-compose.yml
 │   └── .env.example
 └── sonarqube/             # Code analysis
-    ├── docker-compose.yml
-    └── .env.example
+│   ├── docker-compose.yml
+│   └── .env.example
+└── monitoring/            # Observability stack
+   ├── docker-compose.yml
+   ├── prometheus.yml
+   └── .env.example
 ```
 
 > **Note:** Every directory contains a `.env.example` file. You must duplicate this file, rename it to `.env`, and fill in your secure passwords before deploying.
+
+
 
 ## Deployment guide
 
@@ -81,6 +99,7 @@ If you are restoring this infrastructure from scratch, follow these steps:
    cd ../authentik && docker compose up -d
    cd ../nextcloud && docker compose up -d
    cd ../sonarqube && docker compose up -d
+   cd ../monitoring && docker compose up -d
    ```
 
 
@@ -107,3 +126,4 @@ This infrastructure is built with a Zero-Trust mindset. **There are absolutely n
 ## Disclaimer
 
 This repository is public for educational purposes, to share architectural ideas, and to serve as my personal backup. Because it is tailored to my specific home network and domain names, **I do not accept Pull Requests (PRs)**. However, feel free to fork this project and adapt it to build your own infrastructure.
+
