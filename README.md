@@ -11,10 +11,8 @@ This infrastructure relies on a modern, open-source stack designed for security,
 * **Network and ingress:**
   *  [Cloudflared](https://developers.cloudflare.com/cloudflare-one/connections/connect-networks/) (Secure outbound tunnel, zero open ports)
   *  [Traefik v3](https://traefik.io/traefik/) (Dynamic Reverse Proxy)
-
 * **Identity and access management:** 
   * [Authentik](https://goauthentik.io/) (Centralized SSO, SAML, and OIDC provider)
-
 * **Services:**
   * [Nextcloud AIO](https://github.com/nextcloud/all-in-one) (Personal cloud, file sync, and collaboration)
   * [SonarQube](https://www.sonarsource.com/products/sonarqube/) (Continuous Code Quality and Security Analysis)
@@ -23,6 +21,8 @@ This infrastructure relies on a modern, open-source stack designed for security,
   * [Grafana](https://grafana.com/) (Visualization and dashboards)
   * [Node-Exporter](https://github.com/prometheus/node_exporter) (Hardware and OS metrics)
   * [cAdvisor](https://github.com/google/cadvisor) (Container resource usage)
+  * [Grafana Loki](https://grafana.com/oss/loki/) (Log aggregation system)
+  * [Grafana Alloy](https://grafana.com/oss/alloy/) (Log collector and pipeline)
 
 
 
@@ -90,13 +90,19 @@ If you are restoring this infrastructure from scratch, follow these steps:
    # Edit the .env file with nano/vim
    ```
 
+4. **Prepare persistent volumes:** For security reasons, Loki runs as a non-root user (UID 10001). You must create its data directory and set the correct permissions before starting the monitoring stack to avoid crash loops:
+
+   ```bash
+   mkdir -p monitoring/loki_data
+   sudo chown -R 10001:10001 monitoring/loki_data
+   
 4. **Spin up the services:**
 
    Launch the services folder by folder, starting with the core infrastructure:
 
    ```bash
-   cd docker compose up -d
-   cd ../authentik && docker compose up -d
+   docker compose up -d
+   cd authentik && docker compose up -d
    cd ../nextcloud && docker compose up -d
    cd ../sonarqube && docker compose up -d
    cd ../monitoring && docker compose up -d
@@ -114,6 +120,7 @@ This repository strictly handles the **container deployment**. It does not autom
   * *See Docs:* [Nextcloud OIDC integration](https://docs.goauthentik.io/integrations/services/nextcloud/)
 * **SonarQube:** Must be connected to Authentik via SAML, and the base URL must be updated in the settings.
   * *See Docs:* [SonarQube SAML Authentication](https://docs.sonarsource.com/sonarqube-server/latest/instance-administration/authentication/saml/overview/)
+* **Grafana:** Connect Loki and Prometheus as Data Sources. Connect to Authentik via OAuth.
 
 
 
