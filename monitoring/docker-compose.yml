@@ -106,11 +106,19 @@ services:
   alloy:
     image: grafana/alloy:latest
     container_name: alloy
+    user: "1000:985"
+    read_only: true
+    security_opt:
+      - no-new-privileges:true
     volumes:
       - ./alloy-config.alloy:/etc/alloy/config.alloy:ro
       - /var/run/docker.sock:/var/run/docker.sock:ro
-      - /var/lib/docker/containers:/var/lib/docker/containers:ro
+#      - /var/lib/docker/containers:/var/lib/docker/containers:ro
+      - alloy_data:/var/lib/alloy/data
     command: run --storage.path=/var/lib/alloy/data /etc/alloy/config.alloy
+    tmpfs:
+      - /tmp
+      - /var/lib/alloy:uid=1000,gid=985
     networks:
       - monitor-net
     restart: always
@@ -118,6 +126,7 @@ services:
 volumes:
   grafana_data:
   prometheus_data:
+  alloy_data:
 
 networks:
   proxy-net:
