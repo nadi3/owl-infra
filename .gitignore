@@ -16,6 +16,7 @@ authentik/custom-templates/
 # Logs
 logs/
 *.log
+monitoring/loki_data/
 
 # OS and IDE files
 .DS_Store
