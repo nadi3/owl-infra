@@ -3,7 +3,12 @@ name: owl-authentik
 services:
   postgresql:
     image: docker.io/library/postgres:16-alpine
+    container_name: authentik-db
     restart: unless-stopped
+    user: "70:70"
+    read_only: true
+    security_opt:
+      - no-new-privileges:true
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -d $${POSTGRES_DB} -U $${POSTGRES_USER}"]
       start_period: 20s
@@ -16,13 +21,21 @@ services:
       POSTGRES_PASSWORD: ${PG_PASS:?database password required}
       POSTGRES_USER: ${PG_USER:-authentik}
       POSTGRES_DB: ${PG_DB:-authentik}
+    tmpfs:
+      - /tmp
+      - /var/run/postgresql
     networks:
       - authentik-internal
 
   redis:
     image: docker.io/library/redis:alpine
+    container_name: authentik-redis
     command: --save 60 1 --loglevel warning
     restart: unless-stopped
+    user: "999:999"
+    read_only: true
+    security_opt:
+      - no-new-privileges:true
     healthcheck:
       test: ["CMD-SHELL", "redis-cli ping | grep PONG"]
       start_period: 20s
@@ -31,6 +44,8 @@ services:
       timeout: 3s
     volumes:
       - redis:/data
+    tmpfs:
+      - /tmp
     networks:
       - authentik-internal
 
