@@ -44,6 +44,10 @@ services:
     image: prom/prometheus:latest
     container_name: prometheus
     restart: always
+    user: "65534:65534"
+    read_only: true
+    security_opt:
+      - no-new-privileges:true
     command:
       - '--config.file=/etc/prometheus/prometheus.yml'
       - '--storage.tsdb.path=/prometheus'
@@ -51,6 +55,8 @@ services:
     volumes:
       - ./prometheus.yml:/etc/prometheus/prometheus.yml:ro
       - prometheus_data:/prometheus
+    tmpfs:
+      - /tmp
     networks:
       - monitor-net
 
